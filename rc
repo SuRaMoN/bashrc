@@ -103,7 +103,7 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 
-for INCLUDE in ~/.bash/scripts/*.sh ~/.bash/config/*.sh; do
+for INCLUDE in ~/.bash/scripts/*.include ~/.bash/config/*.include; do
 	. "$INCLUDE"
 done
 

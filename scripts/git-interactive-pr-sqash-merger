@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ ! "$(type -P dialog)" -o ! "$(type -P git-pulls)" ]; then
+	if grep Ubuntu /etc/issue || grep Debian /etc/issue ]; then
+		if [ ! "$(type -P sudo)" ]; then
+			echo 'su -c "apt-get install rubygems"; su -c "gem install git-pulls"'
+			su -c "apt-get install rubygems dialog"
+			su -c "gem install git-pulls"
+		else
+			echo "sudo apt-get install rubygems; sudo gem install git-pulls"
+			sudo apt-get install rubygems dialog
+			sudo gem install git-pulls
+		fi
+	else
+		echo "Whut fuck os you have ?! install dialog and git-pulls NOW"
+	fi
+fi
+
+
+
+git pulls update
+if [ $? -ne 0 ]; then echo error while fetching pull requests ; exit 1; fi
+
+PR_DIALOG_ARGS=()
+while read LINE; do
+	PR_DIALOG_ARGS+=("${LINE%% *}" "${LINE#* }")
+done < <(git pulls list | tail -n +2)
+PR=$(dialog --stdout --menu "Merge pull request: " 15 120 8 \
+		"${PR_DIALOG_ARGS[@]}")
+if [ $? -ne 0 ]; then exit; fi
+if ! git config --get-regexp "remote.*fetch" "/pr/" > /dev/null; then
+	echo "You didn't add the the pull requests refs, add ?"
+	read -p "Execute git config --add remote.origin.fetch \"+refs/pull/*/head:refs/remotes/origin/pr/*\"' ? [N/y] " CONFIRM
+	if [ "$CONFIRM" == "y" ]; then
+		git config --add remote.origin.fetch "+refs/pull/*/head:refs/remotes/origin/pr/*"
+	fi
+fi
+git fetch --all
+git merge --squash remotes/origin/pr/$PR
+
