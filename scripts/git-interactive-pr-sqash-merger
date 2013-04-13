@@ -15,6 +15,7 @@ if [ ! "$(type -P dialog)" -o ! "$(type -P git-pulls)" ]; then
 		fi
 	else
 		echo "Whut fuck os you have ?! install dialog and git-pulls NOW"
+		exit
 	fi
 fi
 

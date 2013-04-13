@@ -1,16 +1,5 @@
 
-CB=( \
-	"/home/matthias/public_html/iBiller" \
-	"/home/matthias/public_html/ic.platform" \
-	"/home/matthias/Projects/Bash/IcAdmin" \
-	"/home/matthias/Projects/PHP/credico-exports" \
-	"/home/matthias/Projects/PHP/ic.export" \
-	"/home/matthias/Projects/PHP/ic.puppet" \
-	"/home/matthias/Projects/PHP/puppet" \
-	"/home/matthias/Projects/PHP/itertools" \
-	"/home/matthias/Projects/PHP/cocobase" \
-	"/home/matthias/Projects/PHP/itertools" \
-	)
+CB=()
 
 function cb() {
 	local B

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+
+exec "$(dirname "$0")/git-interactive-pull-push" $* pull
+

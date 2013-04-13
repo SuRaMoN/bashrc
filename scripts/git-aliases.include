@@ -1,10 +1,10 @@
  
-alias adc='git-interactive-add-diff-commit'
+alias adc='~/.bash/scripts/git-interactive-add-diff-commit'
 alias di='git diff HEAD'
 alias st='git status -u'
-alias co='git-interactive-checkout'
-alias pul='git-interactive-pull'
-alias pus='git-interactive-push'
-alias br='git-interactive-branch'
-alias pr="~/.bash/scripts/git-interactive-pr-sqash-merger"
+alias co='~/.bash/scripts/git-interactive-checkout'
+alias pul='~/.bash/scripts/git-interactive-pull'
+alias pus='~/.bash/scripts/git-interactive-push'
+alias br='~/.bash/scripts/git-interactive-branch'
+alias pr='~/.bash/scripts/git-interactive-pr-sqash-merger'
 
