@@ -20,6 +20,12 @@ if [ ! "$(type -P dialog)" -o ! "$(type -P git-pulls)" ]; then
 fi
 
 
+CURRENTBRANCH="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
+
+read -p "Pull first from origin (git pull origin $CURRENTBRANCH)? [Y/n] " CONFIRM
+if [ "$CONFIRM" != "n" ]; then
+	git pull origin "$CURRENTBRANCH"
+fi
 
 git pulls update
 
