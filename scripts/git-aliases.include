@@ -1,6 +1,7 @@
  
 alias adc='~/.bash/scripts/git-interactive-add-diff-commit'
 alias di='git diff HEAD'
+alias dimb='git diff $(git merge-base HEAD master)..HEAD'
 alias st='git status -u'
 alias co='~/.bash/scripts/git-interactive-checkout'
 alias pul='~/.bash/scripts/git-interactive-pull'

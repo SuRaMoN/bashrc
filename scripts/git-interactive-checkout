@@ -62,7 +62,7 @@ echo
 
 ## List all branches
 I=0
-for BRANCH in $(git branch $BRANCHPARAMS | grep -o "[^ ]*$"); do
+for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
 	((I++))
 	DESCR="$(git config branch.$BRANCH.description)"
 	if [ "$CURRENTBRANCH" == "$BRANCH" ]; then
