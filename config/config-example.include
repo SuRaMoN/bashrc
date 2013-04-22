@@ -1,0 +1,19 @@
+
+## Example config file
+
+## cb-bookmarks 
+
+#CB=( \
+#	"~/Projects" \
+#	"~/Documents" \
+#	)
+
+
+
+## git backup all
+
+#GIT_BACKUP_ALL=( \
+#	[/home/matthias/Projects/git-repo-1/]=remote-name \
+#	[/home/matthias/Projects/PHP/git-repo-2/]=remote-name \
+#)
+
