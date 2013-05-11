@@ -1,7 +1,7 @@
  
 
 parse_git_branch() {
-	git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \[\1\]/'
+	git symbolic-ref -q HEAD | grep -o '[^/]*$'
 }
 
 get_hostname_in_color_by_hash() {

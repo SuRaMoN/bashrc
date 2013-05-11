@@ -19,6 +19,23 @@ if [ ! "$(type -P dialog)" -o ! "$(type -P git-pulls)" ]; then
 	fi
 fi
 
+if ! git config --global github.user > /dev/null; then
+	read -p "Please enter your github username: " USERNAME
+	git config --global github.user "$USERNAME"
+else
+	USERNAME="$(git config --global github.user)"
+fi
+
+if ! git config --global github.token > /dev/null; then
+	TOKEN="$(curl -u "$USERNAME" -d '{"scopes":["repo"],"note":"git-pull access"}' \
+		https://api.github.com/authorizations | \
+		grep '"token":' | \
+		egrep -o '[^"]{40}')"
+	if [ "$TOKEN" != "" ]; then
+		git config --global github.token "$TOKEN"
+	fi
+fi
+
 
 CURRENTBRANCH="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')"
 
