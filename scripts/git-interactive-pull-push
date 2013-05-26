@@ -35,7 +35,7 @@ ACTION="$1"
 if [ "$ALL_BRANCHES" == "1" ]; then
 	CURRENTBRANCH=--all
 else
-	CURRENTBRANCH="$(git branch 2> /dev/null | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")"
+	CURRENTBRANCH="$(git symbolic-ref -q HEAD 2> /dev/null | grep -o '[^/]*$')"
 fi
 
 echo "git $ACTION <????> $CURRENTBRANCH"
