@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if  [ ! "$(type -P git)" -o ! "$(type -P ssh)" -o ! "$(type -P ksshaskpass)" ]; then
+	echo sudo apt-get install git ssh openssh-client ksshaskpass
+	sudo apt-get install git ssh openssh-client ksshaskpass
+fi
+
+if ! grep -q ControlMaster ~/.ssh/config &> /dev/null; then
+	read -p "No multiplexing config found in your ssh config. This is neccesary for speedygit. You want to autoinstall this? [Y/n] " CONFIRM
+	if [ "$CONFIRM" != "n" ]; then
+cat >> ~/.ssh/config <<EOF
+Host *
+   ControlMaster auto
+   ControlPath ~/.ssh/multiplex/master-%r@%h:%p
+EOF
+	fi
+fi
+
+
+(
+	SSH_ASKPASS=/usr/bin/ksshaskpass ssh-add
+	while true; do
+		ssh -N git@github.com
+	done
+) &>/dev/null &
+
