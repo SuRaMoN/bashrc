@@ -13,6 +13,7 @@ Host *
    ControlMaster auto
    ControlPath ~/.ssh/multiplex/master-%r@%h:%p
 EOF
+	mkdir -p ~/.ssh/multiplex
 	fi
 fi
 
