@@ -61,16 +61,17 @@ echo "To checkout remote branches use the -r switch"
 echo
 
 ## List all branches
-I=0
+I=96
 for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
 	((I++))
 	DESCR="$(git config branch.$BRANCH.description)"
+	ID="$(printf \\$(printf '%03o' $I))"
 	if [ "$CURRENTBRANCH" == "$BRANCH" ]; then
-		echo -e "$GREEN$I) $BRANCH - $DESCR$NO_COLOUR"
+		echo -e "$GREEN$ID) $BRANCH - $DESCR$NO_COLOUR"
 	else
-		echo "$I) $BRANCH - $DESCR"
+		echo "$ID) $BRANCH - $DESCR"
 	fi
-	BRANCHES[$I]="$BRANCH"
+	BRANCHES[$ID]="$BRANCH"
 done
 
 if [ -n "$LISTONLY" ]; then
