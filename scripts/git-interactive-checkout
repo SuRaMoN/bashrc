@@ -60,6 +60,8 @@ CURRENTBRANCH="$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
 echo "To checkout remote branches use the -r switch"
 echo
 
+declare -A BRANCHES
+
 ## List all branches
 I=96
 for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
@@ -94,11 +96,11 @@ if [ -n "$DELETE" ]; then
 fi
 
 ## actual checkout
-read -p "Checkout branch: " BRANCHNUM
-if [ -z "$BRANCHNUM" ]; then
+read -p "Checkout branch: " BRANCHID
+if [ -z "$BRANCHID" ]; then
 	exit
 fi
-BRANCH="${BRANCHES[$BRANCHNUM]}"
+BRANCH="${BRANCHES[$BRANCHID]}"
 if echo "$BRANCH" | grep -q "^remotes/"; then
 	LOCALNAME="$(echo "$BRANCH" | grep -o '[^/]*$')"
 	git checkout -b "$LOCALNAME" "$BRANCH"
