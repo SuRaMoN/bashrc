@@ -77,13 +77,18 @@ for REMOTE in $(echo $REMOTEKEYS | tr "," " "); do
 			echo "Fast forward pull failed, you wish to rebase or merge?"
 			echo " 1) rebase merge"
 			echo " 2) normal merge"
-			echo " 3) abort pull"
+			echo " 3) reset hard to ${REMOTES[$REMOTE]}/$CURRENTBRANCH"
+			echo " 4) abort pull"
 			read -p "Action: " NEXT_ACTION
 			if [ "$NEXT_ACTION" == 1 ]; then
 				git $ACTION --rebase "${REMOTES[$REMOTE]}" "$CURRENTBRANCH"
 			fi
 			if [ "$NEXT_ACTION" == 2 ]; then
 				git $ACTION "${REMOTES[$REMOTE]}" "$CURRENTBRANCH"
+			fi
+			if [ "$NEXT_ACTION" == 3 ]; then
+				git fetch --all
+				git reset --hard "${REMOTES[$REMOTE]}/$CURRENTBRANCH"
 			fi
 		fi
 		exit
