@@ -64,7 +64,13 @@ declare -A BRANCHES
 
 ## List all branches
 I=96
-for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
+
+SORTEDBRANCHES="$(for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
+	git log -n 1 --pretty="%ci" "$BRANCH" | tr -d "\n"
+	echo " $BRANCH"
+done | sort)"
+
+while read BRANCH; do
 	((I++))
 	DESCR="$(git config branch.$BRANCH.description)"
 	ID="$(printf \\$(printf '%03o' $I))"
@@ -74,7 +80,7 @@ for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); d
 		echo "$ID) $BRANCH - $DESCR"
 	fi
 	BRANCHES[$ID]="$BRANCH"
-done
+done < <(printf "%s\n" "$SORTEDBRANCHES" | sed -e 's/.\{0,26\}//')
 
 if [ -n "$LISTONLY" ]; then
 	exit

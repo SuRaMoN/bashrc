@@ -2,6 +2,7 @@
  
 ALL_BRANCHES=0
 
+OPTIONS=
 while :
 do
 	case "$1" in
@@ -9,11 +10,16 @@ do
 		shift
 		ALL_BRANCHES=1
 		;;
+	-f | --force)
+		OPTIONS="$OPTIONS $1"
+		shift
+		;;
 	-h | --help )
 		shift
-		echo "Usage: $0 [-a|--all-branches]"
-		echo "  -a|--all-branches         All branches"
-		echo "  -h|--help              Show help"
+		echo "Usage: $0 [-a|--all-branches] [-f|--force"
+		echo "  -a|--all-branches        All branches"
+		echo "  -f|--force               Force push"
+		echo "  -h|--help                Show help"
 		exit
 		;;
 	--) # End of all options
@@ -62,42 +68,73 @@ if [ -z "$REMOTEKEYS" ]; then
 	exit
 fi
 
-OPTIONS=
-if [ "$ACTION" == pull ]; then
-	OPTIONS="$OPTIONS --ff-only"
-fi
+push_or_pull() {
+	local ACTION LOCAL_OPTIONS
 
-for REMOTE in $(echo $REMOTEKEYS | tr "," " "); do
-	echo git $ACTION $OPTIONS "${REMOTES[$REMOTE]}" "$CURRENTBRANCH"
-	RESPONSE="$(git $ACTION $OPTIONS "${REMOTES[$REMOTE]}" "$CURRENTBRANCH" 2>&1)"
+	ACTION="$1"
+	LOCAL_OPTIONS="$OPTIONS"
+
+	if [ "$ACTION" == pull ]; then
+		LOCAL_OPTIONS="$LOCAL_OPTIONS --ff-only"
+	fi
+
+	echo git $ACTION $LOCAL_OPTIONS "$REMOTE" "$CURRENTBRANCH"
+	RESPONSE="$(git $ACTION $LOCAL_OPTIONS "$REMOTE" "$CURRENTBRANCH" 2>&1)"
 	ACTION_EXIT_CODE="$?"
 	echo "$RESPONSE"
 	if [[ "$ACTION_EXIT_CODE" != 0 ]]; then
-		if echo "$RESPONSE" | grep -q "fatal: Not possible to fast-forward, aborting."; then
+		if printf "%s" "$RESPONSE" | grep -q "fatal: Not possible to fast-forward, aborting."; then
 			echo "Fast forward pull failed, you wish to rebase or merge?"
 			echo " 1) rebase merge"
 			echo " 2) normal merge"
-			echo " 3) reset hard to ${REMOTES[$REMOTE]}/$CURRENTBRANCH"
+			echo " 3) reset hard to $REMOTE/$CURRENTBRANCH"
 			echo " 4) abort pull"
 			read -p "Action: " NEXT_ACTION
-			if [ "$NEXT_ACTION" == 1 ]; then
-				git $ACTION --rebase "${REMOTES[$REMOTE]}" "$CURRENTBRANCH"
-			fi
-			if [ "$NEXT_ACTION" == 2 ]; then
-				git $ACTION "${REMOTES[$REMOTE]}" "$CURRENTBRANCH"
-			fi
-			if [ "$NEXT_ACTION" == 3 ]; then
-				git fetch --all
-				git reset --hard "${REMOTES[$REMOTE]}/$CURRENTBRANCH"
-			fi
+			case "$NEXT_ACTION" in
+				1)
+					git $ACTION --rebase "$REMOTE" "$CURRENTBRANCH"
+				;;
+				2)
+					git $ACTION "$REMOTE" "$CURRENTBRANCH"
+				;;
+				3)
+					git fetch --all && git reset --hard "$REMOTE/$CURRENTBRANCH"
+				;;
+				4)
+					exit;
+				;;
+			esac
+
+		elif printf "%s" "$RESPONSE" | grep -q "failed to push some refs to" && printf "%s" "$RESPONSE" | grep -q "Updates were rejected because the tip of your current branch is behind"; then
+			echo "Fast forward pull failed, you wish to rebase or merge?"
+			echo " 1) pull"
+			echo " 2) force push"
+			echo " 3) abort pull"
+			read -p "Action: " NEXT_ACTION
+			case "$NEXT_ACTION" in
+				1)
+					push_or_pull pull
+					push_or_pull push
+				;;
+				2)
+					git push --force "$REMOTE" "$CURRENTBRANCH"
+				;;
+				3)
+					exit;
+				;;
+			esac
 		fi
-		exit
 	fi
-	if [[ "$ACTION" == "push" && "${REMOTES[$REMOTE]}" != "origin" && "${REMOTES[$REMOTE]}" != "upstream" && "$CURRENTBRANCH" != "--all" ]]; then
-		read -e -p "Send pull request? [y/n] " -i "n" CONFIRM_PULL_REQUEST
+	if [[ "$ACTION" == "push" && "$REMOTE" != "origin" && "$REMOTE" != "upstream" && "$CURRENTBRANCH" != "--all" ]]; then
+		read -e -p "Send pull request? [N/y] " CONFIRM_PULL_REQUEST
 		if [[ "$CONFIRM_PULL_REQUEST" == "y" ]]; then
-			hub pull-request
+			hub pull-request -b rc
 		fi
 	fi
+}
+
+for REMOTE_KEY in $(printf "%s" $REMOTEKEYS | tr "," " "); do
+	REMOTE="${REMOTES[$REMOTE_KEY]}"
+	push_or_pull $ACTION
 done
 
