@@ -128,7 +128,7 @@ push_or_pull() {
 	if [[ "$ACTION" == "push" && "$REMOTE" != "origin" && "$REMOTE" != "upstream" && "$CURRENTBRANCH" != "--all" ]]; then
 		read -e -p "Send pull request? [N/y] " CONFIRM_PULL_REQUEST
 		if [[ "$CONFIRM_PULL_REQUEST" == "y" ]]; then
-			hub pull-request -b rc
+			hub pull-request -b master
 		fi
 	fi
 }

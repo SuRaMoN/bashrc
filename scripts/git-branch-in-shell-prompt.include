@@ -10,6 +10,9 @@ get_hostname_in_color_by_hash() {
 	for (( i=0; i< ${#HOSTNAME}; i++ )); do
 	  ((HASH+=$(printf '%d' "'${HOSTNAME:$i:1}'")))
 	done
+    if [[ $(($HASH%2)) == 0 && $((30+($HASH/2)%8)) == 30 ]]; then
+        HASH=1
+    fi
 	echo -e "\033[$(($HASH%2));$((30+($HASH/2)%8))m$HOSTNAME\033[00m"
 }
 
