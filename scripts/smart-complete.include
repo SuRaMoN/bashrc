@@ -1,0 +1,24 @@
+
+function _smart_complete_do() {
+    local CACHE_FILE CUR PREV FILES
+    CACHE_FILE=~/.smart-complete/$(md5sum <<< "$1" | grep -o '^\w*')
+    FILES=*
+    COMPREPLY=()
+    CUR="${COMP_WORDS[COMP_CWORD]}"
+    COMPREPLY=( $(compgen -o filenames -W "$(cat "$CACHE_FILE") ${FILES[*]}" -- "$CUR") )
+    return 0
+}
+
+function smart-complete() {
+    local COMMAND CURRENT_CONFIG
+
+    COMMAND="$1"
+    shift
+    mkdir -p ~/.smart-complete
+    $COMMAND "$@" 2>&1 | tr ' ' '\n' | grep '^-[A-Za-z0-9_-]*$' | tr '\n' ' ' > ~/.smart-complete/$(md5sum <<< "$COMMAND" | grep -o '^\w*')
+
+    CURRENT_CONFIG="$(cat ~/.bash/config/smart-complete.include | sort | uniq)"
+    cat <<< "$CURRENT_CONFIG" > ~/.bash/config/smart-complete.include
+    echo complete -F _smart_complete_do "$COMMAND" >> ~/.bash/config/smart-complete.include
+    complete -F _smart_complete_do "$COMMAND"
+}

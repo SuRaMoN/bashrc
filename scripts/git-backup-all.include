@@ -50,14 +50,14 @@ git-backup-all() {
 
 
 	if [[ "${#PUSHQUEUE[@]}" > 0 ]]; then
-		PUSHES=$(dialog --stdout --checklist "Push branches: " 15 120 8 "${DIALOGARGS[@]}")
+		PUSHES="$(dialog --stdout --checklist "Push branches: " 15 120 8 "${DIALOGARGS[@]}")"
 
 		for I in $(seq 0 3 ${#PUSHQUEUE[@]}); do
 			J=$(expr $I / 3)
 			GIT_PATH="${PUSHQUEUE[$I]}"
 			GIT_REMOTE="${PUSHQUEUE[$I+1]}"
 			BRANCH="${PUSHQUEUE[$I+2]}"
-			if [[ "$PUSHES" =~ "\"$J\"" ]]; then
+			if [[ "$PUSHES" =~ " $J " ]]; then
 				pushd "$GIT_PATH"
 				git push $GIT_REMOTE $BRANCH:$BRANCH
 				popd
