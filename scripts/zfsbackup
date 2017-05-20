@@ -2,25 +2,34 @@
 
 SHELL=bash
 CONFIG_PATH=$(HOME)/.zfsbackup
+THIS_FILE=$(lastword $(MAKEFILE_LIST))
 
 default:
 	echo "Usage:"
 	echo -e "\tzfsbackup backup"
 	echo -e "\tzfsbackup snapshot"
 	echo -e "\tzfsbackup send"
+	echo -e "\tzfsbackup receive"
+	echo -e "\tzfsbackup diff"
+	echo -e "\tzfsbackup diff-size"
 
 backup: $(CONFIG_PATH)
-	@$(MAKE) -s -f zfsbackup snapshot
-	@$(MAKE) -s -f zfsbackup send
+	@$(MAKE) -s -f "$(THIS_FILE)" snapshot
+	@$(MAKE) -s -f "$(THIS_FILE)" zfsbackup send
 
 snapshot: $(CONFIG_PATH)
 	@source "$(CONFIG_PATH)" && sudo zfs snapshot "$$FILESYSTEM@zfsbackup-$$(date +"%Y-%m-%d-%H-%M-%S")"
 
-send: $(CONFIG_PATH)
+diff: $(CONFIG_PATH)
 	@source "$(CONFIG_PATH)" && set -o pipefail && \
-	$(MAKE) -s -f zfsbackup to-send | while read DIFF; do \
+	LAST_BACKUP="$$(sudo zfs list -t snapshot -o name -H -d 1 -r "$$FILESYSTEM" | sort -r | head -n 1 | grep .)" && \
+	sudo zfs diff "$$LAST_BACKUP" "$$FILESYSTEM"
+
+send: $(CONFIG_PATH)
+	source "$(CONFIG_PATH)" && set -o pipefail && \
+	$(MAKE) -s -f "$(THIS_FILE)" to-send | while read DIFF; do \
 		set -e && \
-		$(MAKE) -s -f zfsbackup send-snap "DIFF=$$DIFF"; \
+		$(MAKE) -s -f "$(THIS_FILE)" send-snap "DIFF=$$DIFF"; \
 	done
 
 to-send: $(CONFIG_PATH)
@@ -60,9 +69,9 @@ send-snap: $(CONFIG_PATH)
 
 receive: $(CONFIG_PATH)
 	@source "$(CONFIG_PATH)" && set -o pipefail && \
-	$(MAKE) -s -f zfsbackup to-receive | while read DIFF; do \
+	$(MAKE) -s -f "$(THIS_FILE)" to-receive | while read DIFF; do \
 		set -e && \
-		$(MAKE) -s -f zfsbackup receive-snap "DIFF=$$DIFF"; \
+		$(MAKE) -s -f "$(THIS_FILE)" receive-snap "DIFF=$$DIFF"; \
 	done
 
 to-receive: $(CONFIG_PATH)
