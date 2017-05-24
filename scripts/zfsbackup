@@ -5,13 +5,12 @@ CONFIG_PATH=$(HOME)/.zfsbackup
 THIS_FILE=$(lastword $(MAKEFILE_LIST))
 
 default:
-	echo "Usage:"
-	echo -e "\tzfsbackup backup"
-	echo -e "\tzfsbackup snapshot"
-	echo -e "\tzfsbackup send"
-	echo -e "\tzfsbackup receive"
+	@echo "Usage:"; \
+	echo -e "\tzfsbackup backup"; \
+	echo -e "\tzfsbackup snapshot"; \
+	echo -e "\tzfsbackup send"; \
+	echo -e "\tzfsbackup receive"; \
 	echo -e "\tzfsbackup diff"
-	echo -e "\tzfsbackup diff-size"
 
 backup: $(CONFIG_PATH)
 	@$(MAKE) -s -f "$(THIS_FILE)" snapshot
