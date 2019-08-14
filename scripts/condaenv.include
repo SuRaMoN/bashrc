@@ -1,0 +1,5 @@
+
+condaenv() {
+    export PATH="/home/matthias/.local/share/anaconda3/envs/credico-cashforecast/bin:/home/matthias/.local/share/anaconda3/bin:$PATH"
+}
+

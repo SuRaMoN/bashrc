@@ -11,4 +11,5 @@ alias pul='~/.bash/scripts/git-interactive-pull'
 alias pus='~/.bash/scripts/git-interactive-push'
 alias br='~/.bash/scripts/git-interactive-branch'
 alias pr='~/.bash/scripts/git-interactive-pr-sqash-merger'
+alias c='git add --all && git commit --reedit-message=HEAD'
 
