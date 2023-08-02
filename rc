@@ -86,7 +86,7 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
 
-for INCLUDE in "$(dirname $(readlink -f "$BASH_SOURCE"))"/scripts/*.include "$(dirname $(readlink -f "$BASH_SOURCE"))"/config/*.include; do
+for INCLUDE in /home/matthias/.bash/scripts/*.include /home/matthias/.bash/config/*.include; do
 	. "$INCLUDE"
 done
 
