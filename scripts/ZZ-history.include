@@ -1,0 +1,9 @@
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoreboth:erasedups
+export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
+export HISTSIZE=10000                    # big big history
+export HISTFILESIZE=100000               # big big history
+shopt -s histappend                      # append to history, don't overwrite it
+

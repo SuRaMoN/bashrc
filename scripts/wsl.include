@@ -1,0 +1,5 @@
+
+if grep -q microsoft /proc/version && [[ "$USER" == "matthias" ]]; then
+    daemonize -p ~/.local/share/gnome-keyring-daemon.pid -l ~/.local/share/gnome-keyring-daemon.lock /usr/bin/gnome-keyring-daemon 2> /dev/null || true
+    export SSH_AUTH_SOCK=/run/user/1000/keyring/ssh
+fi

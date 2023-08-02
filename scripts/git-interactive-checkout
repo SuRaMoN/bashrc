@@ -66,7 +66,7 @@ declare -A BRANCHES
 I=96
 
 SORTEDBRANCHES="$(for BRANCH in $(git branch $BRANCHPARAMS | grep -v "/pr/" | grep -o "[^ ]*$"); do
-	git log -n 1 --pretty="%ci" "$BRANCH" | tr -d "\n"
+	git log -n 1 --pretty="%ci" "$BRANCH" -- | tr -d "\n"
 	echo " $BRANCH"
 done | sort)"
 
