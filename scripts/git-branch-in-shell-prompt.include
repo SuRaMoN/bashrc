@@ -10,5 +10,9 @@ else
     PS1='\n\[\033[01;31m\]\u\[\033[00;33m\] [$(parse_git_branch)] ($PLATFORM) \[\033[00m\]\[\033[01;32m\]${PWD/$HOME/~}\[\033[00m\]\n\$ '
 fi
 
-# Change the window title of X terminals
-PROMPT_COMMAND='printf "\033]0;%s\007 \e]9;9;%s\007" "$(basename "$PWD")" "$(wslpath -w "$PWD")"'
+if command -v wslpath &> /dev/null; then
+    # Change the window title of X terminals
+    PROMPT_COMMAND='printf "\033]0;%s\007 \e]9;9;%s\007" "$(basename "$PWD")" "$(wslpath -w "$PWD")"'
+else
+    PROMPT_COMMAND='printf "\033]0;%s\007" "$(basename "$PWD")"'
+fi
